@@ -18,6 +18,7 @@ export default function Transacoes() {
     const [categoriaId, setCategoriaId] = useState<number | ''>('');
     const [pessoaId, setPessoaId] = useState<number | ''>('');
     const [filtro, setFiltro] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function carregarDadosBase() {
         try {
@@ -40,6 +41,8 @@ export default function Transacoes() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
+
         try {
             await transacoesApi.create({
                 descricao,
@@ -56,6 +59,8 @@ export default function Transacoes() {
             await carregarDadosBase();
         } catch (error) {
             console.error("Falha na persistência da transação:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -108,7 +113,7 @@ export default function Transacoes() {
                 <div className="form-grid transaction-form-grid">
                 <div className="field">
                     <label>Pessoa</label>
-                    <select value={pessoaId} onChange={(e) => setPessoaId(e.target.value === '' ? '' : Number(e.target.value))} required>
+                    <select value={pessoaId} onChange={(e) => setPessoaId(e.target.value === '' ? '' : Number(e.target.value))} disabled={isSubmitting} required>
                         <option value="" disabled>Selecione uma pessoa</option>
                         {pessoas.map(p => (
                             <option key={p.id} value={p.id}>{p.nome} (Idade: {p.idade})</option>
@@ -121,7 +126,7 @@ export default function Transacoes() {
                     <select 
                         value={tipo} 
                         onChange={(e) => setTipo(Number(e.target.value) as TipoTransacao)}
-                        disabled={isMenorDeIdade}
+                        disabled={isMenorDeIdade || isSubmitting}
                     >
                         <option value={TipoTransacao.Despesa}>Despesa</option>
                         <option value={TipoTransacao.Receita}>Receita</option>
@@ -131,7 +136,7 @@ export default function Transacoes() {
 
                 <div className="field">
                     <label>Categoria</label>
-                    <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value === '' ? '' : Number(e.target.value))} required>
+                    <select value={categoriaId} onChange={(e) => setCategoriaId(e.target.value === '' ? '' : Number(e.target.value))} disabled={isSubmitting} required>
                         <option value="" disabled>Selecione uma categoria</option>
                         {categoriasFiltradas.map(c => (
                             <option key={c.id} value={c.id}>{c.descricao}</option>
@@ -146,6 +151,7 @@ export default function Transacoes() {
                         value={descricao} 
                         onChange={(e) => setDescricao(e.target.value)} 
                         maxLength={400}
+                        disabled={isSubmitting}
                         required 
                     />
                 </div>
@@ -158,12 +164,15 @@ export default function Transacoes() {
                         min="0.01"
                         value={valor} 
                         onChange={(e) => setValor(e.target.value === '' ? '' : Number(e.target.value))} 
+                        disabled={isSubmitting}
                         required 
                     />
                 </div>
                 </div>
                 <div className="form-actions">
-                    <button className="submit-button" type="submit">Cadastrar transacao</button>
+                    <button className="submit-button" type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Salvando...' : 'Cadastrar transacao'}
+                    </button>
                 </div>
             </form>
 
@@ -178,7 +187,7 @@ export default function Transacoes() {
             </div>
 
             <div className="table-wrap">
-            <table className="data-table">
+            <table className="data-table responsive-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -192,12 +201,12 @@ export default function Transacoes() {
                 <tbody>
                     {transacoesFiltradas.map((t) => (
                         <tr key={t.id}>
-                            <td>{t.id}</td>
-                            <td>{t.pessoa?.nome}</td>
-                            <td>{t.categoria?.descricao}</td>
-                            <td>{domainUtils.getTipoTransacaoLabel(t.tipo)}</td>
-                            <td>{t.descricao}</td>
-                            <td className={t.tipo === TipoTransacao.Receita ? 'money-positive' : 'money-negative'}>{formatCurrency(t.valor)}</td>
+                            <td data-label="ID">{t.id}</td>
+                            <td data-label="Pessoa">{t.pessoa?.nome}</td>
+                            <td data-label="Categoria">{t.categoria?.descricao}</td>
+                            <td data-label="Tipo">{domainUtils.getTipoTransacaoLabel(t.tipo)}</td>
+                            <td data-label="Descricao">{t.descricao}</td>
+                            <td data-label="Valor" className={t.tipo === TipoTransacao.Receita ? 'money-positive' : 'money-negative'}>{formatCurrency(t.valor)}</td>
                         </tr>
                     ))}
                 </tbody>

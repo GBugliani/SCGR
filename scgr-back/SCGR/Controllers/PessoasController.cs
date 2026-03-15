@@ -34,6 +34,28 @@ namespace SCGR.Controllers
             return Created($"/api/pessoas/{pessoa.Id}", pessoa);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPessoa(int id, Pessoa pessoaAtualizada)
+        {
+            if (id != pessoaAtualizada.Id)
+            {
+                return BadRequest();
+            }
+
+            var pessoa = await _context.Pessoas.FindAsync(id);
+            if (pessoa == null)
+            {
+                return NotFound();
+            }
+
+            pessoa.Nome = pessoaAtualizada.Nome;
+            pessoa.Idade = pessoaAtualizada.Idade;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
         // Deleta uma pessoa, a exclusão das transações associadas ocorrerá automaticamente
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePessoa(int id)

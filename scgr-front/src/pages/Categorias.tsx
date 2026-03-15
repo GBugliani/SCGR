@@ -11,6 +11,7 @@ export default function Categorias() {
     const [descricao, setDescricao] = useState('');
     const [finalidade, setFinalidade] = useState<FinalidadeCategoria>(FinalidadeCategoria.Despesa);
     const [filtro, setFiltro] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     async function carregarCategorias() {
         try {
@@ -26,6 +27,8 @@ export default function Categorias() {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setIsSubmitting(true);
+
         try {
             await categoriasApi.create({
                 descricao, 
@@ -37,6 +40,8 @@ export default function Categorias() {
             await carregarCategorias();
         } catch (error) {
             console.error("Falha na persistência da categoria:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -69,6 +74,7 @@ export default function Categorias() {
                         value={descricao} 
                         onChange={(e) => setDescricao(e.target.value)} 
                         maxLength={400}
+                        disabled={isSubmitting}
                         required
                     />
                 </div>
@@ -77,6 +83,7 @@ export default function Categorias() {
                     <select 
                         value={finalidade} 
                         onChange={(e) => setFinalidade(Number(e.target.value) as FinalidadeCategoria)}
+                        disabled={isSubmitting}
                     >
                         <option value={FinalidadeCategoria.Despesa}>Despesa</option>
                         <option value={FinalidadeCategoria.Receita}>Receita</option>
@@ -85,7 +92,9 @@ export default function Categorias() {
                 </div>
                 </div>
                 <div className="form-actions">
-                    <button className="submit-button" type="submit">Cadastrar categoria</button>
+                    <button className="submit-button" type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Salvando...' : 'Cadastrar categoria'}
+                    </button>
                 </div>
             </form>
 
@@ -100,7 +109,7 @@ export default function Categorias() {
             </div>
 
             <div className="table-wrap">
-            <table className="data-table">
+            <table className="data-table responsive-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -111,9 +120,9 @@ export default function Categorias() {
                 <tbody>
                     {categoriasFiltradas.map((c) => (
                         <tr key={c.id}>
-                            <td>{c.id}</td>
-                            <td>{c.descricao}</td>
-                            <td>{domainUtils.getFinalidadeCategoriaLabel(c.finalidade)}</td>
+                            <td data-label="ID">{c.id}</td>
+                            <td data-label="Descricao">{c.descricao}</td>
+                            <td data-label="Finalidade">{domainUtils.getFinalidadeCategoriaLabel(c.finalidade)}</td>
                         </tr>
                     ))}
                 </tbody>

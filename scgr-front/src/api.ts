@@ -29,6 +29,9 @@ export const pessoasApi = {
     create: async (payload: { nome: string; idade: number }) => {
         await api.post('/pessoas', payload);
     },
+    update: async (payload: { id: number; nome: string; idade: number }) => {
+        await api.put(`/pessoas/${payload.id}`, payload);
+    },
     remove: async (id: number) => {
         await api.delete(`/pessoas/${id}`);
     },

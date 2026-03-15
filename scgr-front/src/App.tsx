@@ -18,6 +18,7 @@ function App() {
     <BrowserRouter>
       <div className="app-shell">
         <header className="app-header">
+          <img src="/vite.svg" alt="" className="header-watermark" aria-hidden="true" />
           <h1 className="app-title">Controle de Gastos Residenciais</h1>
           <p className="app-subtitle">Organize pessoas, categorias, transacoes e acompanhe seus totais em um unico painel.</p>
           <nav>

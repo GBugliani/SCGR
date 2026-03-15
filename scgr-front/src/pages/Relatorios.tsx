@@ -23,7 +23,7 @@ function RelatorioSecao({ titulo, cabecalhoPrincipal, linhas, totalGeral }: Rela
         <section>
             <h3>{titulo}</h3>
             <div className="table-wrap">
-                <table className="data-table">
+                <table className="data-table responsive-table responsive-table-with-footer">
                     <thead>
                         <tr>
                             <th>{cabecalhoPrincipal}</th>
@@ -35,10 +35,10 @@ function RelatorioSecao({ titulo, cabecalhoPrincipal, linhas, totalGeral }: Rela
                     <tbody>
                         {linhas.map((linha) => (
                             <tr key={linha.id}>
-                                <td>{linha.nome}</td>
-                                <td className="money-positive">{formatCurrency(linha.totalReceitas)}</td>
-                                <td className="money-negative">{formatCurrency(linha.totalDespesas)}</td>
-                                <td className={linha.saldo >= 0 ? 'money-positive' : 'money-negative'}>
+                                <td data-label={cabecalhoPrincipal}>{linha.nome}</td>
+                                <td data-label="Total de Receitas" className="money-positive">{formatCurrency(linha.totalReceitas)}</td>
+                                <td data-label="Total de Despesas" className="money-negative">{formatCurrency(linha.totalDespesas)}</td>
+                                <td data-label="Saldo Liquido" className={linha.saldo >= 0 ? 'money-positive' : 'money-negative'}>
                                     {formatCurrency(linha.saldo)}
                                 </td>
                             </tr>
@@ -47,10 +47,10 @@ function RelatorioSecao({ titulo, cabecalhoPrincipal, linhas, totalGeral }: Rela
                     <tfoot>
                         {totalGeral && (
                             <tr className="summary-row">
-                                <td>TOTAL GERAL</td>
-                                <td className="money-positive">{formatCurrency(totalGeral.totalReceitas)}</td>
-                                <td className="money-negative">{formatCurrency(totalGeral.totalDespesas)}</td>
-                                <td className={totalGeral.saldoLiquido >= 0 ? 'money-positive' : 'money-negative'}>
+                                <td data-label={cabecalhoPrincipal}>TOTAL GERAL</td>
+                                <td data-label="Total de Receitas" className="money-positive">{formatCurrency(totalGeral.totalReceitas)}</td>
+                                <td data-label="Total de Despesas" className="money-negative">{formatCurrency(totalGeral.totalDespesas)}</td>
+                                <td data-label="Saldo Liquido" className={totalGeral.saldoLiquido >= 0 ? 'money-positive' : 'money-negative'}>
                                     {formatCurrency(totalGeral.saldoLiquido)}
                                 </td>
                             </tr>
